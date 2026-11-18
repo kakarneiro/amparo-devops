@@ -1,4 +1,4 @@
-# Amparo · Infraestrutura em nuvem (Docker + Azure)
+﻿# Amparo · Infraestrutura em nuvem (Docker + Azure)
 
 **Global Solution 2026/2 · CitizenTech · FIAP · DevOps Tools & Cloud Computing**
 
@@ -15,7 +15,7 @@ Docker Compose, em uma **VM Ubuntu no Microsoft Azure** provisionada por Azure C
 
 ## Links
 
-- 🎥 Vídeo de demonstração: **[preencher — YouTube não listado]**
+- 🎥 Vídeo de demonstração: https://youtu.be/BYDQnQ00OaY
 - 🌐 API em produção: http://168.62.161.251:8080/swagger-ui.html *(VM ligada durante o período de avaliação)*
 - API (código-fonte original): https://github.com/kakarneiro/amparo-api
 - Dispositivo IoT: https://github.com/kakarneiro/amparo-iot
