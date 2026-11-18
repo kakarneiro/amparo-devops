@@ -1,0 +1,4 @@
+.env
+amparo-api/target/
+amparo-api/.idea/
+*.iml

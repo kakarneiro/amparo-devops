@@ -1,0 +1,283 @@
+### Requisicoes de teste (funciona no IntelliJ e na extensao REST Client do VS Code)
+@host = http://localhost:8080
+
+### Listar cidadaos (paginado e ordenado)
+GET {{host}}/cidadaos?page=0&size=5&sort=nome,asc
+
+### Buscar cidadao por id
+GET {{host}}/cidadaos/1
+
+### Criar cidadao -> 201
+POST {{host}}/cidadaos
+Content-Type: application/json
+
+{
+  "nome": "Antonio Ferreira",
+  "dataNascimento": "1945-11-02",
+  "telefone": "11999990003",
+  "endereco": "Rua Verde, 55 - Osasco",
+  "condicao": "Idoso"
+}
+
+### Criar cidadao invalido -> 400 com lista de campos
+POST {{host}}/cidadaos
+Content-Type: application/json
+
+{
+  "nome": "",
+  "dataNascimento": "2030-01-01"
+}
+
+### Id inexistente -> 404
+GET {{host}}/cidadaos/999
+
+### Atualizar cidadao
+PUT {{host}}/cidadaos/1
+Content-Type: application/json
+
+{
+  "nome": "Maria das Dores Silva",
+  "dataNascimento": "1948-03-12",
+  "telefone": "11988880001",
+  "endereco": "Rua das Flores, 120 - Sao Paulo",
+  "condicao": "Idosa, mobilidade reduzida",
+  "ativo": true
+}
+
+### Criar cuidador
+POST {{host}}/cuidadores
+Content-Type: application/json
+
+{
+  "nome": "Pedro Henrique",
+  "telefone": "11966660001",
+  "email": "pedro@email.com",
+  "parentesco": "Neto",
+  "prioridade": 3,
+  "cidadaoId": 1
+}
+
+### Criar dispositivo
+POST {{host}}/dispositivos
+Content-Type: application/json
+
+{
+  "codigoSerial": "ESP32-0003",
+  "modelo": "Amparo v1",
+  "cidadaoId": 1
+}
+
+### >>> O QUE O ESP32 ENVIA <<<  Registrar evento pelo serial do dispositivo
+POST {{host}}/eventos
+Content-Type: application/json
+
+{
+  "codigoSerial": "ESP32-0001",
+  "tipo": "BOTAO_EMERGENCIA",
+  "descricao": "Botao pressionado",
+  "latitude": -23.5505,
+  "longitude": -46.6333
+}
+
+### Listar eventos (mais recentes primeiro)
+GET {{host}}/eventos
+
+### Acionar cuidador para o evento (atendimento)
+POST {{host}}/atendimentos
+Content-Type: application/json
+
+{
+  "eventoId": 1,
+  "cuidadorId": 1
+}
+
+### Cuidador respondeu
+PUT {{host}}/atendimentos/1
+Content-Type: application/json
+
+{
+  "eventoId": 1,
+  "cuidadorId": 1,
+  "resultado": "ATENDIDO",
+  "observacao": "Filha chegou em 10 minutos"
+}
+
+### Fechar o evento
+PATCH {{host}}/eventos/1/status
+Content-Type: application/json
+
+{ "status": "RESOLVIDO" }
+
+### Criar lembrete
+POST {{host}}/lembretes
+Content-Type: application/json
+
+{
+  "titulo": "Insulina",
+  "descricao": "Aplicar antes do almoco",
+  "horario": "11:30:00",
+  "cidadaoId": 2
+}
+
+### Excluir -> 204
+DELETE {{host}}/lembretes/1
+
+### ===== ETAPA 2: CONSULTAS E REGRAS DE NEGOCIO =====
+
+### Filtro dinamico (Specification): cidadaos ativos com "idos" na condicao
+GET {{host}}/cidadaos?condicao=idos&ativo=true&sort=nome,asc
+
+### Cadeia de cuidadores do cidadao 1 (query method, ordenado por prioridade)
+GET {{host}}/cidadaos/1/cuidadores
+
+### Historico de eventos do cidadao 1 (@Query JPQL)
+GET {{host}}/cidadaos/1/eventos
+
+### Eventos filtrados: so emergencias em atendimento
+GET {{host}}/eventos?status=EM_ATENDIMENTO&tipo=BOTAO_EMERGENCIA
+
+### Eventos por periodo
+GET {{host}}/eventos?inicio=2026-11-01T00:00:00&fim=2026-11-30T23:59:59
+
+### Fluxo completo: ESP32 aperta o botao -> API aciona cuidador prioridade 1 automaticamente
+POST {{host}}/eventos
+Content-Type: application/json
+
+{ "codigoSerial": "ESP32-0001", "tipo": "QUEDA_DETECTADA", "descricao": "Impacto detectado pelo acelerometro" }
+
+### Ver quem foi acionado (deve ser Ana Paula, prioridade 1, PENDENTE)
+GET {{host}}/eventos/1/atendimentos
+
+### Ana nao respondeu -> escalar para Seu Roberto (prioridade 2)
+POST {{host}}/eventos/1/escalar
+
+### Agora a linha do tempo mostra Ana SEM_RESPOSTA e Roberto PENDENTE
+GET {{host}}/eventos/1/atendimentos
+
+### Escalar de novo com a cadeia esgotada -> evento volta para ABERTO
+POST {{host}}/eventos/1/escalar
+
+### Evento TESTE nao aciona ninguem
+POST {{host}}/eventos
+Content-Type: application/json
+
+{ "codigoSerial": "ESP32-0002", "tipo": "TESTE", "descricao": "Teste de conectividade" }
+
+### Regra violada -> 422 (tentar escalar evento encerrado)
+PATCH {{host}}/eventos/1/status
+Content-Type: application/json
+
+{ "status": "RESOLVIDO" }
+
+###
+POST {{host}}/eventos/1/escalar
+
+### ===== ETAPA 3: SEGURANCA (JWT + papeis + token de dispositivo) =====
+# Usuarios de teste (perfil dev):
+#   admin@amparo.com / admin123  -> ADMIN
+#   ana@amparo.com   / ana123    -> CUIDADOR
+
+### Sem token -> 401
+GET {{host}}/cidadaos
+
+### Login ADMIN (copie o token da resposta para a variavel abaixo)
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{ "email": "admin@amparo.com", "senha": "admin123" }
+
+### Login CUIDADOR
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{ "email": "ana@amparo.com", "senha": "ana123" }
+
+### Senha errada -> 401
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{ "email": "admin@amparo.com", "senha": "errada" }
+
+### Registro de novo usuario
+POST {{host}}/auth/registro
+Content-Type: application/json
+
+{ "nome": "Carla Lima", "email": "carla@amparo.com", "senha": "carla123", "papel": "CUIDADOR" }
+
+### Cole o token aqui:
+@tokenAdmin = COLE_O_TOKEN_DO_ADMIN
+@tokenCuidador = COLE_O_TOKEN_DO_CUIDADOR
+
+### Quem sou eu
+GET {{host}}/auth/me
+Authorization: Bearer {{tokenAdmin}}
+
+### Com token -> 200
+GET {{host}}/cidadaos
+Authorization: Bearer {{tokenAdmin}}
+
+### CUIDADOR tentando criar cidadao -> 403
+POST {{host}}/cidadaos
+Authorization: Bearer {{tokenCuidador}}
+Content-Type: application/json
+
+{ "nome": "Teste", "dataNascimento": "1950-01-01" }
+
+### CUIDADOR escalando evento -> permitido
+POST {{host}}/eventos/1/escalar
+Authorization: Bearer {{tokenCuidador}}
+
+### ESP32 sem header -> 401
+POST {{host}}/eventos
+Content-Type: application/json
+
+{ "codigoSerial": "ESP32-0001", "tipo": "BOTAO_EMERGENCIA" }
+
+### ESP32 com X-Device-Token -> 201 (e aciona o cuidador)
+POST {{host}}/eventos
+Content-Type: application/json
+X-Device-Token: esp32-amparo-dev-token
+
+{ "codigoSerial": "ESP32-0001", "tipo": "BOTAO_EMERGENCIA", "descricao": "Botao pressionado" }
+
+### ===== ETAPA 4: CACHE, HATEOAS, ACTUATOR, SWAGGER =====
+
+### HATEOAS: repare nos _links (self, cuidadores, eventos, lembretes, atualizar, excluir)
+GET {{host}}/cidadaos/1
+Authorization: Bearer {{tokenAdmin}}
+
+### HATEOAS: evento aberto tem links "escalar" e "alterar-status"; resolvido nao tem
+GET {{host}}/eventos/1
+Authorization: Bearer {{tokenAdmin}}
+
+### CACHE: chame 2x e veja no console que o SELECT so roda na primeira
+GET {{host}}/cidadaos/1/cuidadores
+Authorization: Bearer {{tokenAdmin}}
+
+### CACHE: criar um cuidador invalida; proximo GET volta a consultar o banco
+POST {{host}}/cuidadores
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "nome": "Pedro Neto", "telefone": "11955550001", "parentesco": "Neto", "prioridade": 3, "cidadaoId": 1 }
+
+### Lembretes ativos do cidadao (cacheado)
+GET {{host}}/lembretes/cidadao/1
+Authorization: Bearer {{tokenAdmin}}
+
+### ACTUATOR (publico)
+GET {{host}}/actuator/health
+
+###
+GET {{host}}/actuator/info
+
+### ACTUATOR metrics (precisa de token)
+GET {{host}}/actuator/metrics
+Authorization: Bearer {{tokenAdmin}}
+
+###
+GET {{host}}/actuator/metrics/http.server.requests
+Authorization: Bearer {{tokenAdmin}}
+
+### SWAGGER: abrir no navegador
+# http://localhost:8080/swagger-ui.html

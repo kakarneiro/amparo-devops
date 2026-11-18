@@ -1,0 +1,62 @@
+# Amparo - API (Java/Spring Boot) + Banco (PostgreSQL) em containers
+# Global Solution 2026/2 - CitizenTech - FIAP 2TDSPB
+#
+# Subir:   docker compose up -d --build
+# Logs:    docker compose logs -f
+# Parar:   docker compose down          (mantem os dados no volume)
+# Limpar:  docker compose down -v       (apaga o volume)
+
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: amparo-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-amparo}
+      POSTGRES_USER: ${POSTGRES_USER:-amparo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-amparo}
+    ports:
+      - "5432:5432"
+    volumes:
+      - amparo-db-data:/var/lib/postgresql/data   # volume nomeado: dados sobrevivem ao container
+    networks:
+      - amparo-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-amparo} -d ${POSTGRES_DB:-amparo}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./amparo-api
+      dockerfile: Dockerfile
+    image: amparo-api:1.0
+    container_name: amparo-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy            # so sobe depois do banco responder
+    environment:
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: docker          # carga inicial de demonstracao
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-amparo}   # "db" = nome do servico na rede Docker
+      DB_USER: ${POSTGRES_USER:-amparo}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-amparo}
+      JWT_SECRET: ${JWT_SECRET:-amparo-gs-2026-citizentech-segredo-de-demonstracao-32chars}
+      DEVICE_TOKEN: ${DEVICE_TOKEN:-esp32-amparo-dev-token}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+    ports:
+      - "8080:8080"
+    networks:
+      - amparo-net
+
+volumes:
+  amparo-db-data:
+    name: amparo-db-data
+
+networks:
+  amparo-net:
+    name: amparo-net
+    driver: bridge
