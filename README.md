@@ -16,6 +16,7 @@ Docker Compose, em uma **VM Ubuntu no Microsoft Azure** provisionada por Azure C
 ## Links
 
 - 🎥 Vídeo de demonstração: **[preencher — YouTube não listado]**
+- 🌐 API em produção: http://168.62.161.251:8080/swagger-ui.html *(VM ligada durante o período de avaliação)*
 - API (código-fonte original): https://github.com/kakarneiro/amparo-api
 - Dispositivo IoT: https://github.com/kakarneiro/amparo-iot
 
@@ -34,7 +35,7 @@ reproduzível.
 flowchart LR
     ESP[ESP32<br/>botão + acelerômetro] -- HTTP POST /eventos<br/>X-Device-Token --> NSG
     APP[App Mobile<br/>Flutter] -- HTTPS/REST + JWT --> NSG
-    subgraph Azure ["Microsoft Azure · rg-amparo · Brazil South"]
+    subgraph Azure ["Microsoft Azure · rg-amparo · East US"]
         NSG[NSG<br/>TCP 22, 8080] --> VM
         subgraph VM ["VM vm-amparo · Ubuntu 22.04 · Docker Engine"]
             subgraph NET ["rede Docker: amparo-net (bridge)"]
@@ -49,7 +50,7 @@ flowchart LR
 
 | Elemento | Detalhe |
 |----------|---------|
-| VM | `vm-amparo`, Ubuntu 22.04, `Standard_B2s`, Brazil South, criada por `scripts/azure-vm.sh` |
+| VM | `vm-amparo`, Ubuntu 22.04, `Standard_D2as_v4`, East US, IP público `168.62.161.251`, criada por `scripts/azure-vm.sh` |
 | Container **api** | Build multi-stage (Maven → JRE 21 Alpine), usuário `amparo` não-root, `WORKDIR /app`, variáveis de ambiente para banco/JWT/token, `EXPOSE 8080` |
 | Container **db** | `postgres:16-alpine`, volume nomeado `amparo-db-data`, variáveis `POSTGRES_*`, porta 5432, healthcheck `pg_isready` |
 | Rede | `amparo-net` (bridge): a API alcança o banco pelo nome do serviço `db` |
@@ -90,12 +91,17 @@ bash scripts/azure-vm.sh
 O script executa, nesta ordem:
 
 ```bash
-az group create --name rg-amparo --location brazilsouth
-az vm create --resource-group rg-amparo --name vm-amparo --image Ubuntu2204 --size Standard_B2s \
-             --admin-username azureuser --generate-ssh-keys --public-ip-sku Standard
+az group create --name rg-amparo --location eastus
+az network public-ip create --resource-group rg-amparo --name vm-amparo-ip --sku Standard --allocation-method Static
+az vm create --resource-group rg-amparo --name vm-amparo --image Ubuntu2204 --size Standard_D2as_v4 \
+             --admin-username azureuser --generate-ssh-keys --public-ip-address vm-amparo-ip
 az vm open-port --resource-group rg-amparo --name vm-amparo --port 8080 --priority 1010
-az vm show -d --resource-group rg-amparo --name vm-amparo --query publicIps -o tsv
+az network public-ip show --resource-group rg-amparo --name vm-amparo-ip --query ipAddress -o tsv
 ```
+
+> Por que East US e `Standard_D2as_v4`: na assinatura Azure for Students a série B retornou
+> `SkuNotAvailable` tanto em Brazil South quanto em East US; a série D estava liberada.
+> O IP público é criado antes da VM para evitar o erro `publicIPAddresses ... not found`.
 
 Anote o **IP público** impresso no final.
 

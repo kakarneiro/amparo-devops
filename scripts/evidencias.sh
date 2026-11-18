@@ -18,16 +18,20 @@ TOKEN=$(curl -s -X POST $API/auth/login -H 'Content-Type: application/json' -d '
 echo "token obtido: ${TOKEN:0:30}..."
 
 echo; echo "===== 10. CRUD: CREATE (POST /cidadaos) ====="
-curl -s -X POST $API/cidadaos -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
-  -d '{"nome":"Antonio Ferreira","dataNascimento":"1945-11-02","telefone":"11999990003","endereco":"Rua Verde, 55","condicao":"Idoso"}'; echo
+CRIADO=$(curl -s -X POST $API/cidadaos -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+  -d '{"nome":"Antonio Ferreira","dataNascimento":"1945-11-02","telefone":"11999990003","endereco":"Rua Verde, 55","condicao":"Idoso"}')
+echo "$CRIADO"
+ID=$(echo "$CRIADO" | sed -E 's/^\{"id":([0-9]+).*/\1/')
+echo "-> id criado: $ID"
 echo; echo "===== 11. CRUD: READ (GET /cidadaos) ====="; curl -s "$API/cidadaos?size=5" -H "Authorization: Bearer $TOKEN"; echo
-echo; echo "===== 12. CRUD: UPDATE (PUT /cidadaos/3) ====="
-curl -s -X PUT $API/cidadaos/3 -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+echo; echo "===== 12. CRUD: UPDATE (PUT /cidadaos/$ID) ====="
+curl -s -X PUT $API/cidadaos/$ID -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
   -d '{"nome":"Antonio Ferreira da Silva","dataNascimento":"1945-11-02","telefone":"11999990003","endereco":"Rua Verde, 55","condicao":"Idoso","ativo":true}'; echo
 echo; echo "===== 13. EVENTO DO ESP32 (POST /eventos) ====="
 curl -s -X POST $API/eventos -H 'Content-Type: application/json' -H 'X-Device-Token: esp32-amparo-dev-token' \
   -d '{"codigoSerial":"ESP32-0001","tipo":"BOTAO_EMERGENCIA","descricao":"Evidencia DevOps"}'; echo
-echo; echo "===== 14. CRUD: DELETE (DELETE /cidadaos/3) ====="; curl -s -o /dev/null -w "HTTP %{http_code}\n" -X DELETE $API/cidadaos/3 -H "Authorization: Bearer $TOKEN"
+echo; echo "===== 14. CRUD: DELETE (DELETE /cidadaos/$ID) ====="; curl -s -o /dev/null -w "HTTP %{http_code}\n" -X DELETE $API/cidadaos/$ID -H "Authorization: Bearer $TOKEN"
+echo; echo "===== 14b. GET apos DELETE (deve ser 404) ====="; curl -s $API/cidadaos/$ID -H "Authorization: Bearer $TOKEN"; echo
 
 echo; echo "===== 15. SELECT DIRETO NO BANCO (persistencia) ====="
 docker compose exec -T db psql -U amparo -d amparo -c '\dt'
