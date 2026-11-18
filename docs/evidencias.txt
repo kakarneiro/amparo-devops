@@ -1,0 +1,148 @@
+===== 1. CONTAINERS EM EXECUCAO =====
+NAME         IMAGE                COMMAND                  SERVICE   CREATED             STATUS                       PORTS
+amparo-api   amparo-api:1.0       "java -jar app.jar"      api       About an hour ago   Up About an hour             0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+amparo-db    postgres:16-alpine   "docker-entrypoint.s…"   db        About an hour ago   Up About an hour (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+
+===== 2. LOGS DA API (ultimas 30 linhas) =====
+amparo-api  | 2026-11-18T15:20:38.833Z  INFO 1 --- [amparo-api] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+amparo-api  | 2026-11-18T15:20:38.853Z  INFO 1 --- [amparo-api] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+amparo-api  | 2026-11-18T15:20:38.853Z  INFO 1 --- [amparo-api] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+amparo-api  | 2026-11-18T15:20:38.892Z  INFO 1 --- [amparo-api] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+amparo-api  | 2026-11-18T15:20:38.893Z  INFO 1 --- [amparo-api] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3839 ms
+amparo-api  | 2026-11-18T15:20:39.463Z  INFO 1 --- [amparo-api] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+amparo-api  | 2026-11-18T15:20:39.557Z  INFO 1 --- [amparo-api] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+amparo-api  | 2026-11-18T15:20:39.606Z  INFO 1 --- [amparo-api] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+amparo-api  | 2026-11-18T15:20:40.020Z  INFO 1 --- [amparo-api] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+amparo-api  | 2026-11-18T15:20:40.056Z  INFO 1 --- [amparo-api] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+amparo-api  | 2026-11-18T15:20:40.330Z  INFO 1 --- [amparo-api] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@53c40ed6
+amparo-api  | 2026-11-18T15:20:40.340Z  INFO 1 --- [amparo-api] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+amparo-api  | 2026-11-18T15:20:42.034Z  INFO 1 --- [amparo-api] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+amparo-api  | 2026-11-18T15:20:42.190Z  WARN 1 --- [amparo-api] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+amparo-api  | 2026-11-18T15:20:42.190Z  WARN 1 --- [amparo-api] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "ukgsvviqof9uk6t7ulyrupnkowq" of relation "tb_dispositivo" does not exist, skipping
+amparo-api  | 2026-11-18T15:20:42.202Z  WARN 1 --- [amparo-api] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+amparo-api  | 2026-11-18T15:20:42.202Z  WARN 1 --- [amparo-api] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "ukspmnyb4dsul95fjmr5kmdmvub" of relation "tb_usuario" does not exist, skipping
+amparo-api  | 2026-11-18T15:20:42.236Z  INFO 1 --- [amparo-api] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+amparo-api  | 2026-11-18T15:20:43.262Z  INFO 1 --- [amparo-api] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+amparo-api  | 2026-11-18T15:20:44.083Z  INFO 1 --- [amparo-api] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+amparo-api  | 2026-11-18T15:20:45.291Z  INFO 1 --- [amparo-api] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoints beneath base path '/actuator'
+amparo-api  | 2026-11-18T15:20:46.258Z  INFO 1 --- [amparo-api] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+amparo-api  | 2026-11-18T15:20:46.287Z  INFO 1 --- [amparo-api] [           main] br.com.fiap.amparo.AmparoApplication     : Started AmparoApplication in 12.09 seconds (process running for 12.994)
+amparo-api  | 2026-11-18T15:46:21.302Z  INFO 1 --- [amparo-api] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+amparo-api  | 2026-11-18T15:46:21.302Z  INFO 1 --- [amparo-api] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+amparo-api  | 2026-11-18T15:46:21.304Z  INFO 1 --- [amparo-api] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+amparo-api  | 2026-11-18T15:46:22.402Z  WARN 1 --- [amparo-api] [nio-8080-exec-5] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+amparo-api  | 	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+amparo-api  | 	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+amparo-api  | 
+
+===== 3. LOGS DO BANCO (ultimas 15 linhas) =====
+amparo-db  | 
+amparo-db  | PostgreSQL init process complete; ready for start up.
+amparo-db  | 
+amparo-db  | 2026-11-18 15:20:29.506 UTC [1] LOG:  starting PostgreSQL 16.16 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+amparo-db  | 2026-11-18 15:20:29.506 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+amparo-db  | 2026-11-18 15:20:29.506 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+amparo-db  | 2026-11-18 15:20:29.518 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+amparo-db  | 2026-11-18 15:20:29.530 UTC [56] LOG:  database system was shut down at 2026-11-18 15:20:29 UTC
+amparo-db  | 2026-11-18 15:20:29.539 UTC [1] LOG:  database system is ready to accept connections
+amparo-db  | 2026-11-18 15:25:29.622 UTC [54] LOG:  checkpoint starting: time
+amparo-db  | 2026-11-18 15:25:43.612 UTC [54] LOG:  checkpoint complete: wrote 142 buffers (0.9%); 0 WAL file(s) added, 0 removed, 0 recycled; write=13.947 s, sync=0.015 s, total=13.990 s; sync files=75, longest=0.006 s, average=0.001 s; distance=579 kB, estimate=579 kB; lsn=0/19DAAB0, redo lsn=0/19DAA78
+amparo-db  | 2026-11-18 15:50:29.947 UTC [54] LOG:  checkpoint starting: time
+amparo-db  | 2026-11-18 15:50:32.294 UTC [54] LOG:  checkpoint complete: wrote 24 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=2.312 s, sync=0.015 s, total=2.347 s; sync files=19, longest=0.009 s, average=0.001 s; distance=2 kB, estimate=521 kB; lsn=0/19DB600, redo lsn=0/19DB5C8
+amparo-db  | 2026-11-18 16:40:30.067 UTC [54] LOG:  checkpoint starting: time
+amparo-db  | 2026-11-18 16:40:31.204 UTC [54] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.109 s, sync=0.010 s, total=1.137 s; sync files=12, longest=0.007 s, average=0.001 s; distance=3 kB, estimate=469 kB; lsn=0/19DC270, redo lsn=0/19DC238
+
+===== 4. USUARIO DENTRO DO CONTAINER DA API (nao-root) =====
+amparo
+
+===== 5. WORKDIR E ESTRUTURA DE DIRETORIOS =====
+/app
+total 61680
+drwxr-xr-x 1 root root     4096 Nov 18 15:20 .
+drwxr-xr-x 1 root root     4096 Nov 18 15:20 ..
+-rw-r--r-- 1 root root 63148106 Nov 18 15:20 app.jar
+
+===== 6. VARIAVEIS DE AMBIENTE DO CONTAINER =====
+DB_URL=jdbc:postgresql://db:5432/amparo
+DB_PASSWORD=amparo
+SERVER_PORT=8080
+DB_USER=amparo
+SPRING_PROFILES_ACTIVE=docker
+
+===== 7. VOLUME NOMEADO =====
+[
+    {
+        "CreatedAt": "2026-11-18T15:20:25Z",
+        "Driver": "local",
+        "Labels": {
+            "com.docker.compose.config-hash": "904252ac308172c604dec66a76e1d1800108c6f0f9d2c691cb34c452fce31536",
+            "com.docker.compose.project": "amparo-devops",
+            "com.docker.compose.version": "5.8.0",
+            "com.docker.compose.volume": "amparo-db-data"
+        },
+        "Mountpoint": "/var/lib/docker/volumes/amparo-db-data/_data",
+        "Name": "amparo-db-data",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+===== 8. HEALTH =====
+{"status":"UP","components":{"db":{"status":"UP","details":{"database":"PostgreSQL","validationQuery":"isValid()"}},"diskSpace":{"status":"UP","details":{"total":31025332224,"free":26312417280,"threshold":10485760,"path":"/app/.","exists":true}},"ping":{"status":"UP"}}}
+
+===== 9. CRUD: LOGIN =====
+token obtido: eyJhbGciOiJIUzM4NCJ9.eyJzdWIiO...
+
+===== 10. CRUD: CREATE (POST /cidadaos) =====
+{"id":5,"nome":"Antonio Ferreira","dataNascimento":"1945-11-02","idade":81,"telefone":"11999990003","endereco":"Rua Verde, 55","condicao":"Idoso","ativo":true,"_links":{"self":{"href":"http://localhost:8080/cidadaos/5"},"cidadaos":{"href":"http://localhost:8080/cidadaos"},"cuidadores":{"href":"http://localhost:8080/cidadaos/5/cuidadores"},"eventos":{"href":"http://localhost:8080/cidadaos/5/eventos"},"lembretes":{"href":"http://localhost:8080/lembretes/cidadao/5"},"atualizar":{"href":"http://localhost:8080/cidadaos/5"},"excluir":{"href":"http://localhost:8080/cidadaos/5"}}}
+-> id criado: 5
+
+===== 11. CRUD: READ (GET /cidadaos) =====
+{"content":[{"id":4,"nome":"Antonio Ferreira","dataNascimento":"1945-11-02","idade":81,"telefone":"11999990003","endereco":"Rua Verde, 55","condicao":"Idoso","ativo":true,"links":[{"rel":"self","href":"http://localhost:8080/cidadaos/4"},{"rel":"cidadaos","href":"http://localhost:8080/cidadaos"},{"rel":"cuidadores","href":"http://localhost:8080/cidadaos/4/cuidadores"},{"rel":"eventos","href":"http://localhost:8080/cidadaos/4/eventos"},{"rel":"lembretes","href":"http://localhost:8080/lembretes/cidadao/4"},{"rel":"atualizar","href":"http://localhost:8080/cidadaos/4"},{"rel":"excluir","href":"http://localhost:8080/cidadaos/4"}]},{"id":5,"nome":"Antonio Ferreira","dataNascimento":"1945-11-02","idade":81,"telefone":"11999990003","endereco":"Rua Verde, 55","condicao":"Idoso","ativo":true,"links":[{"rel":"self","href":"http://localhost:8080/cidadaos/5"},{"rel":"cidadaos","href":"http://localhost:8080/cidadaos"},{"rel":"cuidadores","href":"http://localhost:8080/cidadaos/5/cuidadores"},{"rel":"eventos","href":"http://localhost:8080/cidadaos/5/eventos"},{"rel":"lembretes","href":"http://localhost:8080/lembretes/cidadao/5"},{"rel":"atualizar","href":"http://localhost:8080/cidadaos/5"},{"rel":"excluir","href":"http://localhost:8080/cidadaos/5"}]},{"id":2,"nome":"Jose Carlos Lima","dataNascimento":"1952-07-30","idade":74,"telefone":"11988880002","endereco":"Av. Brasil, 900 - Guarulhos","condicao":"Idoso com Alzheimer inicial","ativo":true,"links":[{"rel":"self","href":"http://localhost:8080/cidadaos/2"},{"rel":"cidadaos","href":"http://localhost:8080/cidadaos"},{"rel":"cuidadores","href":"http://localhost:8080/cidadaos/2/cuidadores"},{"rel":"eventos","href":"http://localhost:8080/cidadaos/2/eventos"},{"rel":"lembretes","href":"http://localhost:8080/lembretes/cidadao/2"},{"rel":"atualizar","href":"http://localhost:8080/cidadaos/2"},{"rel":"excluir","href":"http://localhost:8080/cidadaos/2"}]},{"id":1,"nome":"Maria das Dores","dataNascimento":"1948-03-12","idade":78,"telefone":"11988880001","endereco":"Rua das Flores, 120 - Sao Paulo","condicao":"Idosa, mobilidade reduzida","ativo":true,"links":[{"rel":"self","href":"http://localhost:8080/cidadaos/1"},{"rel":"cidadaos","href":"http://localhost:8080/cidadaos"},{"rel":"cuidadores","href":"http://localhost:8080/cidadaos/1/cuidadores"},{"rel":"eventos","href":"http://localhost:8080/cidadaos/1/eventos"},{"rel":"lembretes","href":"http://localhost:8080/lembretes/cidadao/1"},{"rel":"atualizar","href":"http://localhost:8080/cidadaos/1"},{"rel":"excluir","href":"http://localhost:8080/cidadaos/1"}]}],"pageable":{"pageNumber":0,"pageSize":5,"sort":{"sorted":true,"unsorted":false,"empty":false},"offset":0,"paged":true,"unpaged":false},"totalElements":4,"totalPages":1,"last":true,"first":true,"numberOfElements":4,"size":5,"number":0,"sort":{"sorted":true,"unsorted":false,"empty":false},"empty":false}
+
+===== 12. CRUD: UPDATE (PUT /cidadaos/5) =====
+{"id":5,"nome":"Antonio Ferreira da Silva","dataNascimento":"1945-11-02","idade":81,"telefone":"11999990003","endereco":"Rua Verde, 55","condicao":"Idoso","ativo":true,"_links":{"self":{"href":"http://localhost:8080/cidadaos/5"},"cidadaos":{"href":"http://localhost:8080/cidadaos"},"cuidadores":{"href":"http://localhost:8080/cidadaos/5/cuidadores"},"eventos":{"href":"http://localhost:8080/cidadaos/5/eventos"},"lembretes":{"href":"http://localhost:8080/lembretes/cidadao/5"},"atualizar":{"href":"http://localhost:8080/cidadaos/5"},"excluir":{"href":"http://localhost:8080/cidadaos/5"}}}
+
+===== 13. EVENTO DO ESP32 (POST /eventos) =====
+{"id":3,"tipo":"BOTAO_EMERGENCIA","status":"EM_ATENDIMENTO","dataHora":"2026-11-18T16:47:11.087027431","descricao":"Evidencia DevOps","latitude":null,"longitude":null,"dispositivoId":1,"codigoSerial":"ESP32-0001","cidadaoId":1,"cidadaoNome":"Maria das Dores","_links":{"self":{"href":"http://localhost:8080/eventos/3"},"eventos":{"href":"http://localhost:8080/eventos"},"atendimentos":{"href":"http://localhost:8080/eventos/3/atendimentos"},"cidadao":{"href":"http://localhost:8080/cidadaos/1"},"escalar":{"href":"http://localhost:8080/eventos/3/escalar"},"alterar-status":{"href":"http://localhost:8080/eventos/3/status"}}}
+
+===== 14. CRUD: DELETE (DELETE /cidadaos/5) =====
+HTTP 204
+
+===== 14b. GET apos DELETE (deve ser 404) =====
+{"timestamp":"2026-11-18T16:47:11.162862207","status":404,"error":"Not Found","message":"Cidadao com id 5 nao encontrado(a)","path":"/cidadaos/5","fields":null}
+
+===== 15. SELECT DIRETO NO BANCO (persistencia) =====
+            List of relations
+ Schema |      Name      | Type  | Owner  
+--------+----------------+-------+--------
+ public | tb_atendimento | table | amparo
+ public | tb_cidadao     | table | amparo
+ public | tb_cuidador    | table | amparo
+ public | tb_dispositivo | table | amparo
+ public | tb_evento      | table | amparo
+ public | tb_lembrete    | table | amparo
+ public | tb_usuario     | table | amparo
+(7 rows)
+
+ id |       nome       |          condicao           
+----+------------------+-----------------------------
+  1 | Maria das Dores  | Idosa, mobilidade reduzida
+  2 | Jose Carlos Lima | Idoso com Alzheimer inicial
+  4 | Antonio Ferreira | Idoso
+(3 rows)
+
+ id |       tipo       |     status     | codigo_serial 
+----+------------------+----------------+---------------
+  3 | BOTAO_EMERGENCIA | EM_ATENDIMENTO | ESP32-0001
+  2 | BOTAO_EMERGENCIA | EM_ATENDIMENTO | ESP32-0001
+  1 | BOTAO_EMERGENCIA | EM_ATENDIMENTO | ESP32-0001
+(3 rows)
+
+ id | cuidador  | resultado 
+----+-----------+-----------
+  1 | Ana Paula | PENDENTE
+  2 | Ana Paula | PENDENTE
+  3 | Ana Paula | PENDENTE
+(3 rows)
+
